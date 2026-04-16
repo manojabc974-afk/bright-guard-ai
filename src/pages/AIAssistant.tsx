@@ -1,15 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Bot, User, Shield, Loader2 } from "lucide-react";
+import { Send, Bot, User, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
 }
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 const quickActions = [
   "How do I protect against phishing?",
@@ -18,19 +21,12 @@ const quickActions = [
   "Best security practices for mobile",
 ];
 
-const mockResponses: Record<string, string> = {
-  "phishing": "## 🛡️ Phishing Protection Tips\n\n1. **Never click suspicious links** — Always verify the sender\n2. **Check URL carefully** — Look for misspellings in domain names\n3. **Enable 2FA** — Use biometric or OTP-based authentication\n4. **Use our AI scanner** — Scan any URL before opening\n5. **Watch for urgency** — Phishing often creates false urgency\n\n> Our BERT model detects phishing with **97.3% accuracy**",
-  "zero-day": "## ⚠️ Zero-Day Attacks\n\nA **zero-day attack** exploits an unknown vulnerability before developers can fix it.\n\n### How AEGIS Detects Them:\n- **Behavioral Analysis** — Monitors app actions against baseline\n- **Anomaly Detection** — Statistical deviation triggers alerts\n- **Heuristic Engine** — Pattern matching against attack signatures\n\nOur system achieves **88.6% detection rate** on unknown threats.",
-  "federated": "## 🌐 Federated Learning\n\n**Privacy-preserving AI** that trains models across devices without sharing raw data.\n\n### How It Works:\n1. Local model trains on your device\n2. Only model weights are shared (not your data)\n3. Global model improves from all participants\n4. Updated model is sent back to your device\n\n### AEGIS Network:\n- **156 active nodes** contributing\n- **91.2% accuracy** and improving\n- **Zero data leakage** — your data never leaves your device",
-  "default": "## 🤖 Security Advisor\n\nI can help you with:\n- **Threat analysis** and explanation\n- **Security best practices**\n- **Understanding our AI models**\n- **Configuring protection settings**\n\nAsk me anything about mobile security!",
-};
-
 export default function AIAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     { id: "1", role: "assistant", content: "# 👋 Hello! I'm AEGIS AI Assistant\n\nI'm here to guide you through mobile security. Ask me about threats, protection strategies, or how our AI models work." },
   ]);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const [isStreaming, setIsStreaming] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -39,30 +35,84 @@ export default function AIAssistant() {
 
   const handleSend = async (text?: string) => {
     const msg = text || input;
-    if (!msg.trim()) return;
+    if (!msg.trim() || isStreaming) return;
     setInput("");
 
     const userMsg: Message = { id: Date.now().toString(), role: "user", content: msg };
-    setMessages((prev) => [...prev, userMsg]);
-    setIsTyping(true);
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
+    setIsStreaming(true);
 
-    await new Promise((r) => setTimeout(r, 1500));
+    let assistantContent = "";
 
-    const lower = msg.toLowerCase();
-    let response = mockResponses.default;
-    if (lower.includes("phishing")) response = mockResponses.phishing;
-    else if (lower.includes("zero-day") || lower.includes("zero day")) response = mockResponses["zero-day"];
-    else if (lower.includes("federated")) response = mockResponses.federated;
+    try {
+      const apiMessages = newMessages
+        .filter(m => m.id !== "1")
+        .map(m => ({ role: m.role, content: m.content }));
 
-    setMessages((prev) => [...prev, { id: (Date.now() + 1).toString(), role: "assistant", content: response }]);
-    setIsTyping(false);
+      const resp = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ messages: apiMessages }),
+      });
+
+      if (resp.status === 429) { toast.error("Rate limited. Please wait a moment."); setIsStreaming(false); return; }
+      if (resp.status === 402) { toast.error("AI credits exhausted."); setIsStreaming(false); return; }
+      if (!resp.ok || !resp.body) throw new Error("Stream failed");
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              setMessages(prev => {
+                const last = prev[prev.length - 1];
+                if (last?.role === "assistant" && last.id !== "1") {
+                  return prev.map((m, i) => i === prev.length - 1 ? { ...m, content: assistantContent } : m);
+                }
+                return [...prev, { id: (Date.now() + 1).toString(), role: "assistant", content: assistantContent }];
+              });
+            }
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+    } catch (err: any) {
+      console.error("Chat error:", err);
+      toast.error("Failed to get AI response");
+    } finally {
+      setIsStreaming(false);
+    }
   };
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] max-w-3xl mx-auto">
       <div className="mb-4">
         <h1 className="text-xl font-display font-bold tracking-wider">AI SECURITY ASSISTANT</h1>
-        <p className="text-sm text-muted-foreground mt-1">Personal AI guidance powered by deep learning</p>
+        <p className="text-sm text-muted-foreground mt-1">Real-time AI guidance powered by deep learning</p>
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 pr-2">
@@ -80,9 +130,7 @@ export default function AIAssistant() {
                 </div>
               )}
               <div className={`max-w-[80%] rounded-xl p-4 ${
-                msg.role === "user"
-                  ? "bg-primary/10 border border-primary/20"
-                  : "glass"
+                msg.role === "user" ? "bg-primary/10 border border-primary/20" : "glass"
               }`}>
                 <div className="prose prose-invert prose-sm max-w-none text-sm [&_h1]:font-display [&_h2]:font-display [&_h3]:font-display [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_p]:text-foreground/80 [&_li]:text-foreground/80 [&_strong]:text-foreground [&_blockquote]:border-primary/30 [&_blockquote]:text-muted-foreground">
                   <ReactMarkdown>{msg.content}</ReactMarkdown>
@@ -97,7 +145,7 @@ export default function AIAssistant() {
           ))}
         </AnimatePresence>
 
-        {isTyping && (
+        {isStreaming && messages[messages.length - 1]?.role !== "assistant" && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-3">
             <div className="rounded-lg bg-primary/10 p-2 h-fit">
               <Bot className="h-4 w-4 text-primary" />
@@ -110,7 +158,6 @@ export default function AIAssistant() {
         )}
       </div>
 
-      {/* Quick actions */}
       {messages.length <= 1 && (
         <div className="flex flex-wrap gap-2 py-3">
           {quickActions.map((action) => (
@@ -132,11 +179,11 @@ export default function AIAssistant() {
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
           placeholder="Ask about security..."
           className="bg-secondary border-border"
-          disabled={isTyping}
+          disabled={isStreaming}
         />
         <Button
           onClick={() => handleSend()}
-          disabled={!input.trim() || isTyping}
+          disabled={!input.trim() || isStreaming}
           className="bg-primary text-primary-foreground hover:bg-primary/90"
         >
           <Send className="h-4 w-4" />
