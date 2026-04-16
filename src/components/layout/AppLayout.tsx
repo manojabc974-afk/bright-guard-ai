@@ -5,6 +5,7 @@ import {
   MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
