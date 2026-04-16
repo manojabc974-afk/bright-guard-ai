@@ -5,6 +5,7 @@ import {
   MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -20,6 +21,7 @@ const navItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const { signOut } = useAuth();
 
   return (
     <div className="flex h-screen overflow-hidden bg-background cyber-grid">
@@ -78,7 +80,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <div className="border-t border-border p-4">
+        <div className="border-t border-border p-4 space-y-3">
           <div className="glass rounded-lg p-3">
             <div className="flex items-center gap-2 mb-2">
               <div className="h-2 w-2 rounded-full bg-primary animate-pulse-glow" />
@@ -86,6 +88,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             <p className="text-[11px] text-muted-foreground">Real-time protection enabled</p>
           </div>
+          <button
+            onClick={signOut}
+            className="w-full flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-display tracking-wider text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+          >
+            LOGOUT
+          </button>
         </div>
       </motion.aside>
 
