@@ -4,8 +4,11 @@ import StatCard from "@/components/dashboard/StatCard";
 import ThreatFeed from "@/components/dashboard/ThreatFeed";
 import ActivityChart from "@/components/dashboard/ActivityChart";
 import { motion } from "framer-motion";
+import { useScanStats } from "@/hooks/useScanStats";
 
 export default function Dashboard() {
+  const { stats, loading } = useScanStats();
+
   return (
     <div className="space-y-6">
       <div>
@@ -14,15 +17,15 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="APPS SCANNED" value="1,247" icon={Scan} variant="accent" trend={{ value: 12, positive: true }} subtitle="Last 24h" />
-        <StatCard title="THREATS DETECTED" value="23" icon={AlertTriangle} variant="destructive" trend={{ value: 5, positive: false }} subtitle="Active threats" />
-        <StatCard title="SAFE APPS" value="1,224" icon={CheckCircle} variant="success" subtitle="98.2% safe rate" />
+        <StatCard title="URLS SCANNED" value={loading ? "..." : stats.totalScans.toLocaleString()} icon={Scan} variant="accent" subtitle="Your scan history" />
+        <StatCard title="THREATS DETECTED" value={loading ? "..." : stats.threats.toString()} icon={AlertTriangle} variant="destructive" subtitle="Phishing & suspicious" />
+        <StatCard title="SAFE URLS" value={loading ? "..." : stats.safeApps.toString()} icon={CheckCircle} variant="success" subtitle={stats.totalScans > 0 ? `${Math.round((stats.safeApps / stats.totalScans) * 100)}% safe rate` : "No scans yet"} />
         <StatCard title="AI MODELS ACTIVE" value="4" icon={Cpu} variant="accent" subtitle="BERT · LSTM · FL · ZD" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-1">
-          <SecurityScore score={87} />
+          <SecurityScore score={stats.securityScore} />
           
           <motion.div 
             className="glass rounded-xl p-5 mt-4"

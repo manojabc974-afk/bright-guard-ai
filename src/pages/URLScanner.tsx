@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Search, Shield, AlertTriangle, XCircle, CheckCircle, Loader2, Link as LinkIcon, QrCode, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 interface ScanResult {
   status: "safe" | "suspicious" | "phishing";
@@ -10,22 +13,6 @@ interface ScanResult {
   explanation: string;
   indicators: string[];
 }
-
-const mockAnalyze = (url: string): Promise<ScanResult> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const isSuspicious = url.includes("login") || url.includes("verify") || url.includes("bank") || url.includes("otp");
-      const isPhishing = url.includes(".xyz") || url.includes("secure-") || url.includes("free-");
-      if (isPhishing) {
-        resolve({ status: "phishing", score: 92, explanation: "Domain registered recently, mimics legitimate banking site. Contains suspicious redirect chains and data harvesting forms.", indicators: ["Recently registered domain", "SSL certificate mismatch", "Fake login form detected", "Suspicious keyword density", "Known phishing pattern match"] });
-      } else if (isSuspicious) {
-        resolve({ status: "suspicious", score: 58, explanation: "URL contains suspicious keywords commonly used in phishing. The domain has limited trust history.", indicators: ["Suspicious keywords detected", "Limited domain history", "Unusual URL structure"] });
-      } else {
-        resolve({ status: "safe", score: 8, explanation: "URL belongs to a well-known and trusted domain. No phishing indicators detected by BERT/LSTM models.", indicators: ["Trusted domain", "Valid SSL", "No malicious patterns"] });
-      }
-    }, 2000);
-  });
-};
 
 const statusConfig = {
   safe: { icon: CheckCircle, color: "text-primary", bg: "bg-primary/10", glow: "glow-primary", label: "SAFE" },
@@ -37,14 +24,46 @@ export default function URLScanner() {
   const [url, setUrl] = useState("");
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
+  const { user } = useAuth();
 
   const handleScan = async () => {
     if (!url.trim()) return;
     setScanning(true);
     setResult(null);
-    const res = await mockAnalyze(url);
-    setResult(res);
-    setScanning(false);
+
+    try {
+      const { data, error } = await supabase.functions.invoke("analyze-url", {
+        body: { url: url.trim() },
+      });
+
+      if (error) throw error;
+      if (data.error) throw new Error(data.error);
+
+      const scanResult: ScanResult = {
+        status: data.status,
+        score: data.score,
+        explanation: data.explanation,
+        indicators: data.indicators,
+      };
+      setResult(scanResult);
+
+      // Save to database
+      if (user) {
+        await supabase.from("scan_results").insert({
+          user_id: user.id,
+          url: url.trim(),
+          status: scanResult.status,
+          score: scanResult.score,
+          explanation: scanResult.explanation,
+          indicators: scanResult.indicators,
+        });
+      }
+    } catch (err: any) {
+      console.error("Scan error:", err);
+      toast.error(err.message || "Failed to analyze URL. Please try again.");
+    } finally {
+      setScanning(false);
+    }
   };
 
   const config = result ? statusConfig[result.status] : null;
@@ -53,7 +72,7 @@ export default function URLScanner() {
     <div className="space-y-6 max-w-3xl mx-auto">
       <div>
         <h1 className="text-xl font-display font-bold tracking-wider">URL & PHISHING SCANNER</h1>
-        <p className="text-sm text-muted-foreground mt-1">Deep learning-powered analysis using BERT & LSTM models</p>
+        <p className="text-sm text-muted-foreground mt-1">AI-powered analysis using deep learning models</p>
       </div>
 
       <div className="glass rounded-xl p-6">
@@ -95,10 +114,10 @@ export default function URLScanner() {
           >
             <div className="flex items-center gap-3 mb-4">
               <Loader2 className="h-5 w-5 text-accent animate-spin" />
-              <span className="font-display text-sm text-accent tracking-wider">ANALYZING URL...</span>
+              <span className="font-display text-sm text-accent tracking-wider">AI ANALYZING URL...</span>
             </div>
             <div className="space-y-2">
-              {["Running BERT model analysis...", "Checking against threat databases...", "Analyzing behavioral patterns...", "Verifying SSL certificates..."].map((step, i) => (
+              {["Running deep learning analysis...", "Checking domain reputation...", "Analyzing URL structure & keywords...", "Generating risk assessment..."].map((step, i) => (
                 <motion.div
                   key={step}
                   initial={{ opacity: 0, x: -10 }}
@@ -115,8 +134,8 @@ export default function URLScanner() {
               <motion.div
                 className="h-full bg-accent rounded-full"
                 initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 2 }}
+                animate={{ width: "90%" }}
+                transition={{ duration: 4, ease: "easeOut" }}
               />
             </div>
           </motion.div>
