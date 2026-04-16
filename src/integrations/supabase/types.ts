@@ -38,6 +38,39 @@ export type Database = {
         }
         Relationships: []
       }
+      scan_results: {
+        Row: {
+          created_at: string
+          explanation: string | null
+          id: string
+          indicators: Json | null
+          score: number
+          status: string
+          url: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          indicators?: Json | null
+          score?: number
+          status: string
+          url: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          indicators?: Json | null
+          score?: number
+          status?: string
+          url?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
