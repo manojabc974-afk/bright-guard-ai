@@ -21,6 +21,7 @@ const navItems = [
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+  const { signOut } = useAuth();
 
   return (
     <div className="flex h-screen overflow-hidden bg-background cyber-grid">
