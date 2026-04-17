@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      community_reports: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          reporter_id: string
+          threat_type: string
+          upvotes: number
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          reporter_id: string
+          threat_type?: string
+          upvotes?: number
+          url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          reporter_id?: string
+          threat_type?: string
+          upvotes?: number
+          url?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -37,6 +67,35 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      report_votes: {
+        Row: {
+          created_at: string
+          id: string
+          report_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          report_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          report_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "report_votes_report_id_fkey"
+            columns: ["report_id"]
+            isOneToOne: false
+            referencedRelation: "community_reports"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       scan_results: {
         Row: {
