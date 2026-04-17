@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, LayoutDashboard, Search, Globe, Brain, Users,
-  MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight
+  MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight, ScanText
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
   { path: "/scan", label: "URL Scanner", icon: Search },
+  { path: "/content", label: "Content Scanner", icon: ScanText },
   { path: "/threats", label: "Threat Intel", icon: Globe },
   { path: "/detection", label: "AI Detection", icon: Brain },
   { path: "/assistant", label: "AI Assistant", icon: MessageSquare },
