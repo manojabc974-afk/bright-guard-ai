@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, AlertTriangle, XCircle, CheckCircle, Loader2, Link as LinkIcon, QrCode, Volume2, VolumeX, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,6 +32,17 @@ export default function URLScanner() {
   const [reporting, setReporting] = useState(false);
   const { user } = useAuth();
   const { enabled: voiceEnabled, setEnabled: setVoiceEnabled, speak } = useVoiceAlert();
+  const [searchParams] = useSearchParams();
+
+  // Auto-scan when arriving from a deep link (e.g., /scan?url=...)
+  useEffect(() => {
+    const incoming = searchParams.get("url");
+    if (incoming && incoming !== url) {
+      setUrl(incoming);
+      handleScan(incoming);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const handleScan = async (overrideUrl?: string) => {
     const target = (overrideUrl ?? url).trim();

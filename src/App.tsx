@@ -7,6 +7,7 @@ import { AuthProvider, useAuth } from "@/hooks/useAuth";
 import AppLayout from "@/components/layout/AppLayout";
 import Dashboard from "@/pages/Dashboard";
 import URLScanner from "@/pages/URLScanner";
+import ContentScanner from "@/pages/ContentScanner";
 import ThreatIntel from "@/pages/ThreatIntel";
 import AIDetection from "@/pages/AIDetection";
 import AIAssistant from "@/pages/AIAssistant";
@@ -53,6 +54,7 @@ const AppRoutes = () => (
     <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
     <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
     <Route path="/scan" element={<ProtectedRoute><AppLayout><URLScanner /></AppLayout></ProtectedRoute>} />
+    <Route path="/content" element={<ProtectedRoute><AppLayout><ContentScanner /></AppLayout></ProtectedRoute>} />
     <Route path="/threats" element={<ProtectedRoute><AppLayout><ThreatIntel /></AppLayout></ProtectedRoute>} />
     <Route path="/detection" element={<ProtectedRoute><AppLayout><AIDetection /></AppLayout></ProtectedRoute>} />
     <Route path="/assistant" element={<ProtectedRoute><AppLayout><AIAssistant /></AppLayout></ProtectedRoute>} />
