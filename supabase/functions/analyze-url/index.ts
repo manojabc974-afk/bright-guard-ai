@@ -20,7 +20,8 @@ async function checkSafeBrowsing(url: string): Promise<{ matched: boolean; threa
           platformTypes: ["ANY_PLATFORM"],
           threatEntryTypes: ["URL"],
           threatEntries: [{ url }],
-        }),
+        },
+      }),
     });
     if (!resp.ok) {
       console.error("Safe Browsing error:", resp.status, await resp.text());
