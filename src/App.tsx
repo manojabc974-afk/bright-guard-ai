@@ -14,6 +14,7 @@ import AIAssistant from "@/pages/AIAssistant";
 import Analytics from "@/pages/Analytics";
 import Community from "@/pages/Community";
 import SecureLogs from "@/pages/SecureLogs";
+import History from "@/pages/History";
 import SettingsPage from "@/pages/SettingsPage";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -61,6 +62,7 @@ const AppRoutes = () => (
     <Route path="/analytics" element={<ProtectedRoute><AppLayout><Analytics /></AppLayout></ProtectedRoute>} />
     <Route path="/community" element={<ProtectedRoute><AppLayout><Community /></AppLayout></ProtectedRoute>} />
     <Route path="/logs" element={<ProtectedRoute><AppLayout><SecureLogs /></AppLayout></ProtectedRoute>} />
+    <Route path="/history" element={<ProtectedRoute><AppLayout><History /></AppLayout></ProtectedRoute>} />
     <Route path="/settings" element={<ProtectedRoute><AppLayout><SettingsPage /></AppLayout></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
