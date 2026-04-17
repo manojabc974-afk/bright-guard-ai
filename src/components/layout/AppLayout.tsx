@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Shield, LayoutDashboard, Search, Globe, Brain, 
+  Shield, LayoutDashboard, Search, Globe, Brain, Users,
   MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -13,6 +13,7 @@ const navItems = [
   { path: "/threats", label: "Threat Intel", icon: Globe },
   { path: "/detection", label: "AI Detection", icon: Brain },
   { path: "/assistant", label: "AI Assistant", icon: MessageSquare },
+  { path: "/community", label: "Community", icon: Users },
   { path: "/analytics", label: "Analytics", icon: BarChart3 },
   { path: "/logs", label: "Secure Logs", icon: Lock },
   { path: "/settings", label: "Settings", icon: Settings },

@@ -36,10 +36,16 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       });
 
     return () => {
-      scanner
-        .stop()
-        .catch(() => {})
-        .finally(() => scanner.clear().catch(() => {}));
+      try {
+        const stopPromise = scanner.stop() as unknown as Promise<void> | undefined;
+        if (stopPromise && typeof stopPromise.then === "function") {
+          stopPromise.catch(() => {}).finally(() => {
+            try { scanner.clear(); } catch { /* noop */ }
+          });
+        } else {
+          try { scanner.clear(); } catch { /* noop */ }
+        }
+      } catch { /* noop */ }
     };
   }, [onScan, onClose]);
 
