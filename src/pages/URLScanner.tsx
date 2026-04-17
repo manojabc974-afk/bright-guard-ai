@@ -1,17 +1,20 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Shield, AlertTriangle, XCircle, CheckCircle, Loader2, Link as LinkIcon, QrCode, Camera } from "lucide-react";
+import { Search, AlertTriangle, XCircle, CheckCircle, Loader2, Link as LinkIcon, QrCode, Volume2, VolumeX, Flag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useVoiceAlert } from "@/hooks/useVoiceAlert";
 import { toast } from "sonner";
+import QRScanner from "@/components/QRScanner";
 
 interface ScanResult {
   status: "safe" | "suspicious" | "phishing";
   score: number;
   explanation: string;
   indicators: string[];
+  sources?: { google_safe_browsing?: string; ai_model?: string };
 }
 
 const statusConfig = {
@@ -24,18 +27,19 @@ export default function URLScanner() {
   const [url, setUrl] = useState("");
   const [scanning, setScanning] = useState(false);
   const [result, setResult] = useState<ScanResult | null>(null);
+  const [showQR, setShowQR] = useState(false);
+  const [reporting, setReporting] = useState(false);
   const { user } = useAuth();
+  const { enabled: voiceEnabled, setEnabled: setVoiceEnabled, speak } = useVoiceAlert();
 
-  const handleScan = async () => {
-    if (!url.trim()) return;
+  const handleScan = async (overrideUrl?: string) => {
+    const target = (overrideUrl ?? url).trim();
+    if (!target) return;
     setScanning(true);
     setResult(null);
 
     try {
-      const { data, error } = await supabase.functions.invoke("analyze-url", {
-        body: { url: url.trim() },
-      });
-
+      const { data, error } = await supabase.functions.invoke("analyze-url", { body: { url: target } });
       if (error) throw error;
       if (data.error) throw new Error(data.error);
 
@@ -44,14 +48,23 @@ export default function URLScanner() {
         score: data.score,
         explanation: data.explanation,
         indicators: data.indicators,
+        sources: data.sources,
       };
       setResult(scanResult);
 
-      // Save to database
+      // Voice alert
+      if (scanResult.status === "phishing") {
+        speak(`Warning! Phishing detected. Risk score ${scanResult.score} out of 100. Do not visit this URL.`);
+      } else if (scanResult.status === "suspicious") {
+        speak(`Caution. This URL is suspicious with a risk score of ${scanResult.score}.`);
+      } else {
+        speak(`URL is safe. Risk score ${scanResult.score}.`);
+      }
+
       if (user) {
         await supabase.from("scan_results").insert({
           user_id: user.id,
-          url: url.trim(),
+          url: target,
           status: scanResult.status,
           score: scanResult.score,
           explanation: scanResult.explanation,
@@ -66,13 +79,51 @@ export default function URLScanner() {
     }
   };
 
+  const handleQRScan = (text: string) => {
+    setShowQR(false);
+    setUrl(text);
+    toast.success("QR code scanned — analyzing...");
+    handleScan(text);
+  };
+
+  const reportToCommunity = async () => {
+    if (!user || !result) return;
+    setReporting(true);
+    try {
+      const { error } = await (supabase as any).from("community_reports").insert({
+        reporter_id: user.id,
+        url: url.trim(),
+        threat_type: result.status,
+        description: result.explanation,
+      });
+      if (error) throw error;
+      toast.success("Reported to community threat feed");
+    } catch (e: any) {
+      toast.error(e.message || "Failed to submit report");
+    } finally {
+      setReporting(false);
+    }
+  };
+
   const config = result ? statusConfig[result.status] : null;
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">URL & PHISHING SCANNER</h1>
-        <p className="text-sm text-muted-foreground mt-1">AI-powered analysis using deep learning models</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-xl font-display font-bold tracking-wider">URL & PHISHING SCANNER</h1>
+          <p className="text-sm text-muted-foreground mt-1">AI + Google Safe Browsing real-time analysis</p>
+        </div>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setVoiceEnabled(!voiceEnabled)}
+          className="gap-1.5 text-xs border-border"
+          title={voiceEnabled ? "Voice alerts on" : "Voice alerts off"}
+        >
+          {voiceEnabled ? <Volume2 className="h-3.5 w-3.5 text-primary" /> : <VolumeX className="h-3.5 w-3.5" />}
+          VOICE
+        </Button>
       </div>
 
       <div className="glass rounded-xl p-6">
@@ -87,69 +138,46 @@ export default function URLScanner() {
               className="pl-10 bg-secondary border-border font-body"
             />
           </div>
-          <Button onClick={handleScan} disabled={scanning || !url.trim()} className="bg-primary text-primary-foreground hover:bg-primary/90 font-display tracking-wider">
+          <Button onClick={() => handleScan()} disabled={scanning || !url.trim()} className="bg-primary text-primary-foreground hover:bg-primary/90 font-display tracking-wider">
             {scanning ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
             <span className="ml-2">SCAN</span>
           </Button>
         </div>
 
         <div className="flex gap-2 mt-4">
-          <Button variant="outline" size="sm" className="text-xs gap-1.5 border-border text-muted-foreground hover:text-foreground">
-            <QrCode className="h-3.5 w-3.5" /> QR Code
-          </Button>
-          <Button variant="outline" size="sm" className="text-xs gap-1.5 border-border text-muted-foreground hover:text-foreground">
-            <Camera className="h-3.5 w-3.5" /> Screenshot
+          <Button variant="outline" size="sm" onClick={() => setShowQR(true)} className="text-xs gap-1.5 border-border text-muted-foreground hover:text-foreground">
+            <QrCode className="h-3.5 w-3.5" /> Scan QR Code
           </Button>
         </div>
       </div>
 
-      {/* Scanning animation */}
+      {showQR && <QRScanner onScan={handleQRScan} onClose={() => setShowQR(false)} />}
+
       <AnimatePresence>
         {scanning && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="glass rounded-xl p-6 overflow-hidden"
-          >
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="glass rounded-xl p-6 overflow-hidden">
             <div className="flex items-center gap-3 mb-4">
               <Loader2 className="h-5 w-5 text-accent animate-spin" />
               <span className="font-display text-sm text-accent tracking-wider">AI ANALYZING URL...</span>
             </div>
             <div className="space-y-2">
-              {["Running deep learning analysis...", "Checking domain reputation...", "Analyzing URL structure & keywords...", "Generating risk assessment..."].map((step, i) => (
-                <motion.div
-                  key={step}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.4 }}
-                  className="text-xs text-muted-foreground flex items-center gap-2"
-                >
+              {["Checking Google Safe Browsing database...", "Running deep learning analysis (BERT)...", "Extracting URL lexical features...", "Generating risk assessment..."].map((step, i) => (
+                <motion.div key={step} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.4 }} className="text-xs text-muted-foreground flex items-center gap-2">
                   <div className="h-1 w-1 rounded-full bg-accent" />
                   {step}
                 </motion.div>
               ))}
             </div>
             <div className="mt-4 h-1 bg-secondary rounded-full overflow-hidden">
-              <motion.div
-                className="h-full bg-accent rounded-full"
-                initial={{ width: "0%" }}
-                animate={{ width: "90%" }}
-                transition={{ duration: 4, ease: "easeOut" }}
-              />
+              <motion.div className="h-full bg-accent rounded-full" initial={{ width: "0%" }} animate={{ width: "90%" }} transition={{ duration: 4, ease: "easeOut" }} />
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Result */}
       <AnimatePresence>
         {result && config && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`glass rounded-xl p-6 ${config.glow}`}
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`glass rounded-xl p-6 ${config.glow}`}>
             <div className="flex items-center gap-3 mb-4">
               <div className={`rounded-lg p-2 ${config.bg}`}>
                 <config.icon className={`h-6 w-6 ${config.color}`} />
@@ -162,31 +190,33 @@ export default function URLScanner() {
             </div>
 
             <div className="h-2 bg-secondary rounded-full overflow-hidden mb-4">
-              <motion.div
-                className={`h-full rounded-full ${result.status === "safe" ? "bg-primary" : result.status === "suspicious" ? "bg-warning" : "bg-destructive"}`}
-                initial={{ width: 0 }}
-                animate={{ width: `${result.score}%` }}
-                transition={{ duration: 0.8 }}
-              />
+              <motion.div className={`h-full rounded-full ${result.status === "safe" ? "bg-primary" : result.status === "suspicious" ? "bg-warning" : "bg-destructive"}`} initial={{ width: 0 }} animate={{ width: `${result.score}%` }} transition={{ duration: 0.8 }} />
             </div>
 
             <p className="text-sm text-foreground/80 mb-4">{result.explanation}</p>
 
-            <div className="space-y-2">
+            <div className="space-y-2 mb-4">
               <h4 className="text-xs font-display text-muted-foreground tracking-wider">INDICATORS</h4>
               {result.indicators.map((ind, i) => (
-                <motion.div
-                  key={ind}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                  className={`flex items-center gap-2 text-xs ${config.color}`}
-                >
-                  <div className={`h-1.5 w-1.5 rounded-full bg-current`} />
+                <motion.div key={`${ind}-${i}`} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }} className={`flex items-center gap-2 text-xs ${config.color}`}>
+                  <div className="h-1.5 w-1.5 rounded-full bg-current" />
                   {ind}
                 </motion.div>
               ))}
             </div>
+
+            {result.sources && (
+              <div className="flex flex-wrap gap-2 mb-4 text-[10px] font-display tracking-wider text-muted-foreground">
+                <span className="px-2 py-1 rounded bg-secondary">GSB: {result.sources.google_safe_browsing}</span>
+                <span className="px-2 py-1 rounded bg-secondary">AI: {result.sources.ai_model}</span>
+              </div>
+            )}
+
+            {result.status !== "safe" && (
+              <Button onClick={reportToCommunity} disabled={reporting} variant="outline" size="sm" className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10">
+                <Flag className="h-3.5 w-3.5" /> {reporting ? "Reporting..." : "Report to Community"}
+              </Button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
