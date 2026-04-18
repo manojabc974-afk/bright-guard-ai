@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_installs: {
+        Row: {
+          app_name: string
+          created_at: string
+          id: string
+          install_source: string
+          package_name: string
+          reason: string | null
+          result: string
+          risk_score: number
+          user_id: string
+        }
+        Insert: {
+          app_name: string
+          created_at?: string
+          id?: string
+          install_source?: string
+          package_name: string
+          reason?: string | null
+          result?: string
+          risk_score?: number
+          user_id: string
+        }
+        Update: {
+          app_name?: string
+          created_at?: string
+          id?: string
+          install_source?: string
+          package_name?: string
+          reason?: string | null
+          result?: string
+          risk_score?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       community_reports: {
         Row: {
           created_at: string
