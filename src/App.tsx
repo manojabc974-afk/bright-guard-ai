@@ -16,6 +16,7 @@ import Community from "@/pages/Community";
 import SecureLogs from "@/pages/SecureLogs";
 import History from "@/pages/History";
 import AppMonitor from "@/pages/AppMonitor";
+import LeakCheck from "@/pages/LeakCheck";
 import SettingsPage from "@/pages/SettingsPage";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -65,6 +66,7 @@ const AppRoutes = () => (
     <Route path="/logs" element={<ProtectedRoute><AppLayout><SecureLogs /></AppLayout></ProtectedRoute>} />
     <Route path="/history" element={<ProtectedRoute><AppLayout><History /></AppLayout></ProtectedRoute>} />
     <Route path="/app-monitor" element={<ProtectedRoute><AppLayout><AppMonitor /></AppLayout></ProtectedRoute>} />
+    <Route path="/leak-check" element={<ProtectedRoute><AppLayout><LeakCheck /></AppLayout></ProtectedRoute>} />
     <Route path="/settings" element={<ProtectedRoute><AppLayout><SettingsPage /></AppLayout></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>

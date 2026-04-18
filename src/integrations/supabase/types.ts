@@ -80,6 +80,39 @@ export type Database = {
         }
         Relationships: []
       }
+      leak_scans: {
+        Row: {
+          breach_count: number
+          breaches: Json
+          check_type: string
+          checked_value: string
+          created_at: string
+          found: boolean
+          id: string
+          user_id: string
+        }
+        Insert: {
+          breach_count?: number
+          breaches?: Json
+          check_type: string
+          checked_value: string
+          created_at?: string
+          found?: boolean
+          id?: string
+          user_id: string
+        }
+        Update: {
+          breach_count?: number
+          breaches?: Json
+          check_type?: string
+          checked_value?: string
+          created_at?: string
+          found?: boolean
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
