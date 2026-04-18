@@ -1,5 +1,8 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { AlertTriangle, CheckCircle, XCircle, Clock } from "lucide-react";
+import { AlertTriangle, CheckCircle, XCircle, Clock, Smartphone } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface ThreatItem {
   id: string;
@@ -18,14 +21,65 @@ const threatConfig = {
 };
 
 const mockThreats: ThreatItem[] = [
-  { id: "1", type: "phishing", source: "URL Scan", description: "Fake login page detected: secure-bank-login.xyz", timestamp: "2 min ago", score: 95 },
-  { id: "2", type: "malware", source: "App Monitor", description: "Suspicious APK: flashlight_pro_v3.apk", timestamp: "8 min ago", score: 78 },
-  { id: "3", type: "safe", source: "Notification", description: "Google Play Store update verified", timestamp: "15 min ago", score: 5 },
-  { id: "4", type: "suspicious", source: "QR Scanner", description: "Shortened URL redirects to unknown domain", timestamp: "22 min ago", score: 62 },
-  { id: "5", type: "phishing", source: "SMS Scanner", description: "OTP phishing attempt: verify-account.net", timestamp: "35 min ago", score: 91 },
+  { id: "m1", type: "phishing", source: "URL Scan", description: "Fake login page detected: secure-bank-login.xyz", timestamp: "2 min ago", score: 95 },
+  { id: "m2", type: "safe", source: "Notification", description: "Google Play Store update verified", timestamp: "15 min ago", score: 5 },
+  { id: "m3", type: "phishing", source: "SMS Scanner", description: "OTP phishing attempt: verify-account.net", timestamp: "35 min ago", score: 91 },
 ];
 
+function timeAgo(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m} min ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
+
 export default function ThreatFeed() {
+  const { user } = useAuth();
+  const [installs, setInstalls] = useState<ThreatItem[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    const load = async () => {
+      const { data } = await supabase
+        .from("app_installs")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      setInstalls(
+        (data ?? []).map((d) => ({
+          id: d.id,
+          type:
+            d.result === "unsafe"
+              ? "malware"
+              : d.result === "warning"
+              ? "suspicious"
+              : "safe",
+          source: "App Monitor",
+          description: `${d.app_name} (${d.reason ?? "—"})`,
+          timestamp: timeAgo(d.created_at),
+          score: d.risk_score,
+        }))
+      );
+    };
+    load();
+    const ch = supabase
+      .channel("threatfeed_installs")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "app_installs", filter: `user_id=eq.${user.id}` },
+        load
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(ch);
+    };
+  }, [user]);
+
+  const items = [...installs, ...mockThreats].slice(0, 6);
+
   return (
     <div className="glass rounded-xl p-5">
       <div className="flex items-center justify-between mb-4">
@@ -36,18 +90,23 @@ export default function ThreatFeed() {
         </div>
       </div>
       <div className="space-y-3">
-        {mockThreats.map((threat, i) => {
+        {items.map((threat, i) => {
           const config = threatConfig[threat.type];
+          const isInstall = threat.source === "App Monitor";
           return (
             <motion.div
               key={threat.id}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
+              transition={{ delay: i * 0.05 }}
               className="flex items-start gap-3 rounded-lg bg-secondary/50 p-3 hover:bg-secondary transition-colors"
             >
               <div className={`rounded-md p-1.5 ${config.bg}`}>
-                <config.icon className={`h-3.5 w-3.5 ${config.color}`} />
+                {isInstall ? (
+                  <Smartphone className={`h-3.5 w-3.5 ${config.color}`} />
+                ) : (
+                  <config.icon className={`h-3.5 w-3.5 ${config.color}`} />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-0.5">

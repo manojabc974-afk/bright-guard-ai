@@ -2,10 +2,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, LayoutDashboard, Search, Globe, Brain, Users,
-  MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight, ScanText, History
+  MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight, ScanText, History, Smartphone
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useInstallMonitor } from "@/hooks/useInstallMonitor";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -17,6 +18,7 @@ const navItems = [
   { path: "/community", label: "Community", icon: Users },
   { path: "/analytics", label: "Analytics", icon: BarChart3 },
   { path: "/history", label: "Scan History", icon: History },
+  { path: "/app-monitor", label: "App Monitor", icon: Smartphone },
   { path: "/logs", label: "Secure Logs", icon: Lock },
   { path: "/settings", label: "Settings", icon: Settings },
 ];
@@ -25,6 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const { signOut } = useAuth();
+  useInstallMonitor(); // global background listener for native package installs
 
   return (
     <div className="flex h-screen overflow-hidden bg-background cyber-grid">
