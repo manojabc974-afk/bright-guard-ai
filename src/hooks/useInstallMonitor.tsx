@@ -38,14 +38,14 @@ export function useInstallMonitor() {
         const cap = await import("@capacitor/core").catch(() => null);
         if (!cap || !cap.Capacitor?.isNativePlatform?.()) return;
 
-        const Sentinel = cap.registerPlugin<{
+        const Sentinel = (cap.registerPlugin as any)("SentinelInstallMonitor") as {
           startMonitoring: () => Promise<{ monitoring: boolean }>;
           stopMonitoring: () => Promise<void>;
           addListener: (
             event: "packageInstalled",
             cb: (e: NativeInstallEvent) => void
           ) => Promise<{ remove: () => void }>;
-        }>("SentinelInstallMonitor");
+        };
 
         await Sentinel.startMonitoring();
         setMonitoring(true);

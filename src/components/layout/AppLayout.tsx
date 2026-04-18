@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, LayoutDashboard, Search, Globe, Brain, Users,
-  MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight, ScanText, History
+  MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight, ScanText, History, Smartphone
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -17,6 +17,7 @@ const navItems = [
   { path: "/community", label: "Community", icon: Users },
   { path: "/analytics", label: "Analytics", icon: BarChart3 },
   { path: "/history", label: "Scan History", icon: History },
+  { path: "/app-monitor", label: "App Monitor", icon: Smartphone },
   { path: "/logs", label: "Secure Logs", icon: Lock },
   { path: "/settings", label: "Settings", icon: Settings },
 ];
