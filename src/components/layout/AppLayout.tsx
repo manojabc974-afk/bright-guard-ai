@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useInstallMonitor } from "@/hooks/useInstallMonitor";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -26,6 +27,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const { signOut } = useAuth();
+  useInstallMonitor(); // global background listener for native package installs
 
   return (
     <div className="flex h-screen overflow-hidden bg-background cyber-grid">
