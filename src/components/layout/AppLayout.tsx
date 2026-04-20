@@ -8,6 +8,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useInstallMonitor } from "@/hooks/useInstallMonitor";
 import ParticleField from "@/components/effects/ParticleField";
+import GradientBlobs from "@/components/effects/GradientBlobs";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard, anim: "nav-ico-dashboard" },
@@ -33,6 +34,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-background cyber-grid relative">
+      <GradientBlobs />
       <ParticleField />
       {/* Mobile overlay */}
       <AnimatePresence>
@@ -120,15 +122,18 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <motion.div
-            key={location.pathname}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            {children}
-          </motion.div>
+        <main className="flex-1 overflow-y-auto p-4 lg:p-6 relative z-10">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={location.pathname}
+              initial={{ opacity: 0, y: 18, filter: "blur(6px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -10, filter: "blur(4px)" }}
+              transition={{ duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+            >
+              {children}
+            </motion.div>
+          </AnimatePresence>
         </main>
       </div>
     </div>
