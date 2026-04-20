@@ -18,11 +18,14 @@ const variantStyles = {
   accent: "text-accent",
 };
 
-export default function StatCard({ title, value, subtitle, icon: Icon, trend, variant = "default" }: StatCardProps) {
+export default function StatCard({ title, value, subtitle, icon: Icon, trend, variant = "default", index = 0 }: StatCardProps & { index?: number }) {
   return (
     <motion.div
-      whileHover={{ y: -2 }}
-      className="glass rounded-xl p-5 group hover:border-primary/20 transition-colors"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: index * 0.08, ease: "easeOut" }}
+      whileHover={{ y: -3, transition: { duration: 0.15 } }}
+      className="glass rounded-xl p-5 group hover:border-primary/30 hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)] transition-all"
     >
       <div className="flex items-start justify-between mb-3">
         <span className="text-xs font-display text-muted-foreground tracking-wider">{title}</span>

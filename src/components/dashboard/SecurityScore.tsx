@@ -12,7 +12,21 @@ export default function SecurityScore({ score }: SecurityScoreProps) {
   const label = score >= 80 ? "EXCELLENT" : score >= 50 ? "MODERATE" : "CRITICAL";
 
   return (
-    <div className={`glass rounded-2xl p-6 flex flex-col items-center ${glowClass}`}>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className={`glass rounded-2xl p-6 flex flex-col items-center ${glowClass} relative overflow-hidden`}
+    >
+      <motion.div
+        className="absolute inset-0 rounded-2xl pointer-events-none"
+        animate={{ boxShadow: [
+          `inset 0 0 20px hsl(var(--primary) / 0.05)`,
+          `inset 0 0 30px hsl(var(--primary) / 0.18)`,
+          `inset 0 0 20px hsl(var(--primary) / 0.05)`,
+        ]}}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+      />
       <h3 className="text-xs font-display text-muted-foreground tracking-widest mb-4">SECURITY SCORE</h3>
       <div className="relative w-36 h-36">
         <svg className="w-full h-full -rotate-90" viewBox="0 0 128 128">
@@ -41,6 +55,6 @@ export default function SecurityScore({ score }: SecurityScoreProps) {
           <span className="text-[10px] text-muted-foreground font-display tracking-widest">{label}</span>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

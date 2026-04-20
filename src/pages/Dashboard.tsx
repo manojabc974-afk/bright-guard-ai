@@ -11,16 +11,26 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">COMMAND CENTER</h1>
-        <p className="text-sm text-muted-foreground mt-1">Real-time threat monitoring & AI-powered protection</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex items-center gap-3"
+      >
+        <div className="animate-shield-form">
+          <Shield className="h-7 w-7 text-primary glow-primary rounded-full" />
+        </div>
+        <div>
+          <h1 className="text-xl font-display font-bold tracking-wider">COMMAND CENTER</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Real-time threat monitoring & AI-powered protection</p>
+        </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="URLS SCANNED" value={loading ? "..." : stats.totalScans.toLocaleString()} icon={Scan} variant="accent" subtitle="Your scan history" />
-        <StatCard title="THREATS DETECTED" value={loading ? "..." : stats.threats.toString()} icon={AlertTriangle} variant="destructive" subtitle="Phishing & suspicious" />
-        <StatCard title="SAFE URLS" value={loading ? "..." : stats.safeApps.toString()} icon={CheckCircle} variant="success" subtitle={stats.totalScans > 0 ? `${Math.round((stats.safeApps / stats.totalScans) * 100)}% safe rate` : "No scans yet"} />
-        <StatCard title="AI MODELS ACTIVE" value="4" icon={Cpu} variant="accent" subtitle="BERT · LSTM · FL · ZD" />
+        <StatCard index={0} title="URLS SCANNED" value={loading ? "..." : stats.totalScans.toLocaleString()} icon={Scan} variant="accent" subtitle="Your scan history" />
+        <StatCard index={1} title="THREATS DETECTED" value={loading ? "..." : stats.threats.toString()} icon={AlertTriangle} variant="destructive" subtitle="Phishing & suspicious" />
+        <StatCard index={2} title="SAFE URLS" value={loading ? "..." : stats.safeApps.toString()} icon={CheckCircle} variant="success" subtitle={stats.totalScans > 0 ? `${Math.round((stats.safeApps / stats.totalScans) * 100)}% safe rate` : "No scans yet"} />
+        <StatCard index={3} title="AI MODELS ACTIVE" value="4" icon={Cpu} variant="accent" subtitle="BERT · LSTM · FL · ZD" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
