@@ -7,6 +7,7 @@ import {
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useInstallMonitor } from "@/hooks/useInstallMonitor";
+import ParticleField from "@/components/effects/ParticleField";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -31,7 +32,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   useInstallMonitor(); // global background listener for native package installs
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background cyber-grid">
+    <div className="flex h-screen overflow-hidden bg-background cyber-grid relative">
+      <ParticleField />
       {/* Mobile overlay */}
       <AnimatePresence>
         {sidebarOpen && (
