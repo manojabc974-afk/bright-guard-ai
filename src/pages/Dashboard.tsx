@@ -5,26 +5,18 @@ import ThreatFeed from "@/components/dashboard/ThreatFeed";
 import ActivityChart from "@/components/dashboard/ActivityChart";
 import { motion } from "framer-motion";
 import { useScanStats } from "@/hooks/useScanStats";
+import PageTitle from "@/components/ui/PageTitle";
 
 export default function Dashboard() {
   const { stats, loading } = useScanStats();
 
   return (
     <div className="space-y-6">
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="flex items-center gap-3"
-      >
-        <div className="animate-shield-form">
-          <Shield className="h-7 w-7 text-primary glow-primary rounded-full" />
-        </div>
-        <div>
-          <h1 className="text-xl font-display font-bold tracking-wider">COMMAND CENTER</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Real-time threat monitoring & AI-powered protection</p>
-        </div>
-      </motion.div>
+      <PageTitle
+        title="Command Center"
+        subtitle="Real-time threat monitoring & AI-powered protection"
+        icon={Shield}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard index={0} title="URLS SCANNED" value={loading ? "..." : stats.totalScans.toLocaleString()} icon={Scan} variant="accent" subtitle="Your scan history" />
@@ -76,11 +68,14 @@ export default function Dashboard() {
           { icon: Shield, title: "Auto Prevention", desc: "Blocking threats automatically", active: true },
           { icon: Zap, title: "Real-Time Alerts", desc: "Instant notifications enabled", active: true },
           { icon: Cpu, title: "Blockchain Logs", desc: "Tamper-proof audit trail", active: true },
-        ].map((sys) => (
+        ].map((sys, i) => (
           <motion.div
             key={sys.title}
-            whileHover={{ scale: 1.02 }}
-            className="glass rounded-xl p-4 flex items-center gap-4"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 + i * 0.1, duration: 0.45, ease: [0.2, 0.8, 0.2, 1] }}
+            whileHover={{ scale: 1.02, y: -2 }}
+            className="glass glass-hover glass-sheen rounded-xl p-4 flex items-center gap-4"
           >
             <div className="rounded-lg bg-primary/10 p-2.5">
               <sys.icon className="h-5 w-5 text-primary" />

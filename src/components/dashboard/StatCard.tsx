@@ -21,11 +21,11 @@ const variantStyles = {
 export default function StatCard({ title, value, subtitle, icon: Icon, trend, variant = "default", index = 0 }: StatCardProps & { index?: number }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.08, ease: "easeOut" }}
-      whileHover={{ y: -3, transition: { duration: 0.15 } }}
-      className="glass rounded-xl p-5 group hover:border-primary/30 hover:shadow-[0_0_20px_hsl(var(--primary)/0.15)] transition-all"
+      initial={{ opacity: 0, y: 24, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.2, 0.8, 0.2, 1] }}
+      whileHover={{ y: -4, scale: 1.02, transition: { duration: 0.2 } }}
+      className="glass glass-hover glass-sheen rounded-xl p-5 group"
     >
       <div className="flex items-start justify-between mb-3">
         <span className="text-xs font-display text-muted-foreground tracking-wider">{title}</span>
