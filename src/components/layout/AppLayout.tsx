@@ -10,19 +10,19 @@ import { useInstallMonitor } from "@/hooks/useInstallMonitor";
 import ParticleField from "@/components/effects/ParticleField";
 
 const navItems = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/scan", label: "URL Scanner", icon: Search },
-  { path: "/content", label: "Content Scanner", icon: ScanText },
-  { path: "/threats", label: "Threat Intel", icon: Globe },
-  { path: "/detection", label: "AI Detection", icon: Brain },
-  { path: "/assistant", label: "AI Assistant", icon: MessageSquare },
-  { path: "/community", label: "Community", icon: Users },
-  { path: "/analytics", label: "Analytics", icon: BarChart3 },
-  { path: "/history", label: "Scan History", icon: History },
-  { path: "/app-monitor", label: "App Monitor", icon: Smartphone },
-  { path: "/leak-check", label: "Leak Monitor", icon: Database },
-  { path: "/logs", label: "Secure Logs", icon: Lock },
-  { path: "/settings", label: "Settings", icon: Settings },
+  { path: "/", label: "Dashboard", icon: LayoutDashboard, anim: "nav-ico-dashboard" },
+  { path: "/scan", label: "URL Scanner", icon: Search, anim: "nav-ico-url" },
+  { path: "/content", label: "Content Scanner", icon: ScanText, anim: "nav-ico-content" },
+  { path: "/threats", label: "Threat Intel", icon: Globe, anim: "nav-ico-threat" },
+  { path: "/detection", label: "AI Detection", icon: Brain, anim: "nav-ico-detection" },
+  { path: "/assistant", label: "AI Assistant", icon: MessageSquare, anim: "nav-ico-assistant" },
+  { path: "/community", label: "Community", icon: Users, anim: "nav-ico-community" },
+  { path: "/analytics", label: "Analytics", icon: BarChart3, anim: "nav-ico-analytics" },
+  { path: "/history", label: "Scan History", icon: History, anim: "nav-ico-history" },
+  { path: "/app-monitor", label: "App Monitor", icon: Smartphone, anim: "nav-ico-monitor" },
+  { path: "/leak-check", label: "Leak Monitor", icon: Database, anim: "nav-ico-leak" },
+  { path: "/logs", label: "Secure Logs", icon: Lock, anim: "nav-ico-logs" },
+  { path: "/settings", label: "Settings", icon: Settings, anim: "nav-ico-settings" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
