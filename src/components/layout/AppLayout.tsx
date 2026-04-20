@@ -75,13 +75,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                className={`nav-item group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${
                   isActive
-                    ? "bg-primary/10 text-primary glow-primary"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    ? "is-active bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
                 }`}
               >
-                <item.icon className={`h-4.5 w-4.5 ${isActive ? "text-primary" : ""}`} />
+                <item.icon className={`h-4.5 w-4.5 ${item.anim} ${isActive ? "text-primary" : ""}`} />
                 <span className="font-body">{item.label}</span>
                 {isActive && <ChevronRight className="ml-auto h-3.5 w-3.5 text-primary" />}
               </Link>
@@ -99,8 +99,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <button
             onClick={signOut}
-            className="w-full flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-display tracking-wider text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+            className="logout-btn w-full flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-display tracking-wider text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
           >
+            <X className="logout-ico h-3.5 w-3.5" />
             LOGOUT
           </button>
         </div>
