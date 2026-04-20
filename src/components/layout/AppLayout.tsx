@@ -10,19 +10,19 @@ import { useInstallMonitor } from "@/hooks/useInstallMonitor";
 import ParticleField from "@/components/effects/ParticleField";
 
 const navItems = [
-  { path: "/", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/scan", label: "URL Scanner", icon: Search },
-  { path: "/content", label: "Content Scanner", icon: ScanText },
-  { path: "/threats", label: "Threat Intel", icon: Globe },
-  { path: "/detection", label: "AI Detection", icon: Brain },
-  { path: "/assistant", label: "AI Assistant", icon: MessageSquare },
-  { path: "/community", label: "Community", icon: Users },
-  { path: "/analytics", label: "Analytics", icon: BarChart3 },
-  { path: "/history", label: "Scan History", icon: History },
-  { path: "/app-monitor", label: "App Monitor", icon: Smartphone },
-  { path: "/leak-check", label: "Leak Monitor", icon: Database },
-  { path: "/logs", label: "Secure Logs", icon: Lock },
-  { path: "/settings", label: "Settings", icon: Settings },
+  { path: "/", label: "Dashboard", icon: LayoutDashboard, anim: "nav-ico-dashboard" },
+  { path: "/scan", label: "URL Scanner", icon: Search, anim: "nav-ico-url" },
+  { path: "/content", label: "Content Scanner", icon: ScanText, anim: "nav-ico-content" },
+  { path: "/threats", label: "Threat Intel", icon: Globe, anim: "nav-ico-threat" },
+  { path: "/detection", label: "AI Detection", icon: Brain, anim: "nav-ico-detection" },
+  { path: "/assistant", label: "AI Assistant", icon: MessageSquare, anim: "nav-ico-assistant" },
+  { path: "/community", label: "Community", icon: Users, anim: "nav-ico-community" },
+  { path: "/analytics", label: "Analytics", icon: BarChart3, anim: "nav-ico-analytics" },
+  { path: "/history", label: "Scan History", icon: History, anim: "nav-ico-history" },
+  { path: "/app-monitor", label: "App Monitor", icon: Smartphone, anim: "nav-ico-monitor" },
+  { path: "/leak-check", label: "Leak Monitor", icon: Database, anim: "nav-ico-leak" },
+  { path: "/logs", label: "Secure Logs", icon: Lock, anim: "nav-ico-logs" },
+  { path: "/settings", label: "Settings", icon: Settings, anim: "nav-ico-settings" },
 ];
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -75,13 +75,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+                className={`nav-item group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium ${
                   isActive
-                    ? "bg-primary/10 text-primary glow-primary"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    ? "is-active bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
                 }`}
               >
-                <item.icon className={`h-4.5 w-4.5 ${isActive ? "text-primary" : ""}`} />
+                <item.icon className={`h-4.5 w-4.5 ${item.anim} ${isActive ? "text-primary" : ""}`} />
                 <span className="font-body">{item.label}</span>
                 {isActive && <ChevronRight className="ml-auto h-3.5 w-3.5 text-primary" />}
               </Link>
@@ -99,8 +99,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <button
             onClick={signOut}
-            className="w-full flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-display tracking-wider text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+            className="logout-btn w-full flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-xs font-display tracking-wider text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
           >
+            <X className="logout-ico h-3.5 w-3.5" />
             LOGOUT
           </button>
         </div>
