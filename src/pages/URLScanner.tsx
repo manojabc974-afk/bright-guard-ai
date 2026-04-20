@@ -167,15 +167,28 @@ export default function URLScanner() {
 
       <AnimatePresence>
         {scanning && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="glass rounded-xl p-6 overflow-hidden">
-            <div className="flex items-center gap-3 mb-4">
-              <Loader2 className="h-5 w-5 text-accent animate-spin" />
-              <span className="font-display text-sm text-accent tracking-wider">AI ANALYZING URL...</span>
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="glass rounded-xl p-6 overflow-hidden scan-overlay">
+            <div className="flex items-center gap-4 mb-4">
+              {/* Radar */}
+              <div className="relative h-14 w-14 rounded-full border border-accent/40 flex items-center justify-center overflow-hidden">
+                <div className="absolute inset-0 rounded-full border border-accent/20" />
+                <div
+                  className="absolute inset-0 animate-radar"
+                  style={{
+                    background: "conic-gradient(from 0deg, transparent 0deg, hsl(var(--accent) / 0.6) 60deg, transparent 90deg)",
+                  }}
+                />
+                <div className="h-2 w-2 rounded-full bg-accent animate-pulse-glow z-10" />
+              </div>
+              <div>
+                <span className="font-display text-sm text-accent tracking-wider">AI ANALYZING URL...</span>
+                <p className="text-[10px] text-muted-foreground tracking-widest mt-0.5">RADAR SWEEP ACTIVE</p>
+              </div>
             </div>
             <div className="space-y-2">
               {["Checking Google Safe Browsing database...", "Running deep learning analysis (BERT)...", "Extracting URL lexical features...", "Generating risk assessment..."].map((step, i) => (
                 <motion.div key={step} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.4 }} className="text-xs text-muted-foreground flex items-center gap-2">
-                  <div className="h-1 w-1 rounded-full bg-accent" />
+                  <div className="h-1 w-1 rounded-full bg-accent animate-pulse" />
                   {step}
                 </motion.div>
               ))}
@@ -189,13 +202,24 @@ export default function URLScanner() {
 
       <AnimatePresence>
         {result && config && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className={`glass rounded-xl p-6 ${config.glow}`}>
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: "spring", stiffness: 200, damping: 18 }}
+            className={`glass rounded-xl p-6 ${config.glow} ${result.status === "phishing" ? "animate-warning-flash border-destructive/50" : ""}`}
+          >
             <div className="flex items-center gap-3 mb-4">
-              <div className={`rounded-lg p-2 ${config.bg}`}>
+              <motion.div
+                className={`rounded-lg p-2 ${config.bg}`}
+                animate={result.status === "safe"
+                  ? { boxShadow: ["0 0 0 hsl(var(--primary)/0)", "0 0 24px hsl(var(--primary)/0.6)", "0 0 0 hsl(var(--primary)/0)"] }
+                  : {}}
+                transition={{ duration: 1.6, repeat: result.status === "safe" ? 2 : 0 }}
+              >
                 <config.icon className={`h-6 w-6 ${config.color}`} />
-              </div>
+              </motion.div>
               <div>
-                <span className={`font-display text-lg font-bold ${config.color} tracking-wider`}>{config.label}</span>
+                <span className={`font-display text-lg font-bold ${config.color} tracking-wider ${result.status === "phishing" ? "animate-glitch" : ""}`}>{config.label}</span>
                 <p className="text-xs text-muted-foreground">Risk Score: {result.score}/100</p>
               </div>
               <div className={`ml-auto text-3xl font-display font-bold ${config.color}`}>{result.score}</div>

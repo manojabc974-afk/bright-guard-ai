@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import MatrixRain from "@/components/effects/MatrixRain";
 
 export default function Register() {
   const [name, setName] = useState("");
@@ -59,8 +60,10 @@ export default function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background cyber-grid p-4">
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-background cyber-grid p-4 relative overflow-hidden">
+      <MatrixRain opacity={0.35} />
+      <div className="fixed inset-0 bg-gradient-to-b from-background/40 via-transparent to-background pointer-events-none z-0" />
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-md relative z-10">
         <div className="glass rounded-2xl p-8 space-y-6">
           <div className="text-center space-y-2">
             <div className="flex justify-center">
