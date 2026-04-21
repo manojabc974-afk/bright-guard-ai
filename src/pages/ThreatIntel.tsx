@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Globe, TrendingUp, Shield, Database, Activity, Map } from "lucide-react";
+import PageTitle from "@/components/ui/PageTitle";
 
 const globalThreats = [
   { region: "North America", level: "Medium", attacks: 1243, trend: "+5%", type: "Phishing" },
@@ -27,10 +28,7 @@ const intelFeeds = [
 export default function ThreatIntel() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">GLOBAL THREAT INTELLIGENCE</h1>
-        <p className="text-sm text-muted-foreground mt-1">Federated threat data from worldwide nodes</p>
-      </div>
+      <PageTitle title="Global Threat Intelligence" subtitle="Federated threat data from worldwide nodes" icon={Globe} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="glass rounded-xl p-5 flex items-center gap-4">

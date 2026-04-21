@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useInstallMonitor } from "@/hooks/useInstallMonitor";
 import { ensureWebNotificationPermission } from "@/lib/appSafety";
 import { toast } from "sonner";
+import PageTitle from "@/components/ui/PageTitle";
 
 interface AppInstall {
   id: string;
@@ -91,12 +92,7 @@ export default function AppMonitor() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">APP INSTALL MONITOR</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Real-time detection of newly installed apps with safety analysis
-        </p>
-      </div>
+      <PageTitle title="App Install Monitor" subtitle="Real-time detection of newly installed apps with safety analysis" icon={Smartphone} />
 
       {/* Permissions setup */}
       <div className="glass rounded-xl p-5">

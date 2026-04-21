@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { ensureWebNotificationPermission, showWebNotification } from "@/lib/appSafety";
 import { toast } from "sonner";
+import PageTitle from "@/components/ui/PageTitle";
 
 interface LeakScan {
   id: string;
@@ -117,12 +118,7 @@ export default function LeakCheck() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">DARK WEB LEAK MONITOR</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          Check if your email or password has appeared in known data breaches
-        </p>
-      </div>
+      <PageTitle title="Dark Web Leak Monitor" subtitle="Check if your email or password has appeared in known data breaches" icon={ShieldAlert} />
 
       <div className="glass rounded-xl p-5">
         <Tabs defaultValue="email">

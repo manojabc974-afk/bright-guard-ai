@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useVoiceAlert } from "@/hooks/useVoiceAlert";
 import { toast } from "sonner";
 import QRScanner from "@/components/QRScanner";
+import PageTitle from "@/components/ui/PageTitle";
 
 interface ScanResult {
   status: "safe" | "suspicious" | "phishing";
@@ -122,10 +123,7 @@ export default function URLScanner() {
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
       <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-xl font-display font-bold tracking-wider">URL & PHISHING SCANNER</h1>
-          <p className="text-sm text-muted-foreground mt-1">AI + Google Safe Browsing real-time analysis</p>
-        </div>
+        <PageTitle title="URL & Phishing Scanner" subtitle="AI + Google Safe Browsing real-time analysis" icon={Search} />
         <Button
           variant="outline"
           size="sm"

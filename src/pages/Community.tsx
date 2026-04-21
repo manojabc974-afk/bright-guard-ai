@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
+import PageTitle from "@/components/ui/PageTitle";
 
 interface Report {
   id: string;
@@ -102,10 +103,7 @@ export default function Community() {
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">COMMUNITY THREAT FEED</h1>
-        <p className="text-sm text-muted-foreground mt-1">Crowdsourced phishing intelligence — report & verify threats together</p>
-      </div>
+      <PageTitle title="Community Threat Feed" subtitle="Crowdsourced phishing intelligence — report & verify threats together" icon={Flag} />
 
       <div className="glass rounded-xl p-5 space-y-3">
         <h3 className="text-sm font-display tracking-wider text-foreground">REPORT A THREAT</h3>
