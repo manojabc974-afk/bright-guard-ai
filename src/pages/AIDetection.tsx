@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Brain, Cpu, Network, Eye, Fingerprint, Wifi, WifiOff, Zap } from "lucide-react";
+import PageTitle from "@/components/ui/PageTitle";
 
 const models = [
   { name: "BERT Phishing Classifier", type: "NLP", accuracy: 97.3, status: "Active", icon: Brain, desc: "Transformer-based text analysis for detecting phishing patterns in URLs and content" },
@@ -20,10 +21,7 @@ const offlineCapabilities = [
 export default function AIDetection() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">AI DETECTION ENGINE</h1>
-        <p className="text-sm text-muted-foreground mt-1">Deep learning models with federated training & zero-day detection</p>
-      </div>
+      <PageTitle title="AI Detection Engine" subtitle="Deep learning models with federated training & zero-day detection" icon={Brain} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {models.map((model, i) => (

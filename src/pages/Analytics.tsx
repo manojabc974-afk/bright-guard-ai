@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { format, subDays, startOfDay } from "date-fns";
+import PageTitle from "@/components/ui/PageTitle";
 
 const tooltipStyle = {
   contentStyle: { background: 'hsl(220, 18%, 7%)', border: '1px solid hsl(220, 15%, 14%)', borderRadius: '8px', fontSize: '12px', color: 'hsl(210, 20%, 92%)' },
@@ -102,10 +103,7 @@ export default function Analytics() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">ADVANCED ANALYTICS</h1>
-        <p className="text-sm text-muted-foreground mt-1">Live insights from your scan history — updates in real-time</p>
-      </div>
+      <PageTitle title="Advanced Analytics" subtitle="Live insights from your scan history — updates in real-time" icon={BarChart3} />
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         {[

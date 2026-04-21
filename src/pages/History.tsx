@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { format } from "date-fns";
 import { toast } from "sonner";
+import PageTitle from "@/components/ui/PageTitle";
 
 interface Scan {
   id: string;
@@ -93,12 +94,7 @@ export default function History() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-display font-bold tracking-wider flex items-center gap-2">
-            <HistoryIcon className="h-5 w-5 text-primary" /> SCAN HISTORY
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">All your past scans, stored securely in your database</p>
-        </div>
+        <PageTitle title="Scan History" subtitle="All your past scans, stored securely in your database" icon={HistoryIcon} />
         {scans.length > 0 && (
           <button
             onClick={handleClearAll}

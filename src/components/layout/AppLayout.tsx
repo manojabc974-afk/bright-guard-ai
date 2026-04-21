@@ -2,7 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Shield, LayoutDashboard, Search, Globe, Brain, Users,
-  MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight, ScanText, History, Smartphone, Database
+  MessageSquare, BarChart3, Lock, Settings, Menu, X, ChevronRight, ScanText, History, Smartphone, Database,
+  KeyRound, ShieldCheck, AlertOctagon, Crown
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,6 +24,10 @@ const navItems = [
   { path: "/app-monitor", label: "App Monitor", icon: Smartphone, anim: "nav-ico-monitor" },
   { path: "/leak-check", label: "Leak Monitor", icon: Database, anim: "nav-ico-leak" },
   { path: "/logs", label: "Secure Logs", icon: Lock, anim: "nav-ico-logs" },
+  { path: "/password-check", label: "Password Check", icon: KeyRound, anim: "nav-ico-settings" },
+  { path: "/guardian", label: "Guardian Mode", icon: ShieldCheck, anim: "nav-ico-monitor" },
+  { path: "/emergency", label: "Emergency Help", icon: AlertOctagon, anim: "nav-ico-dashboard" },
+  { path: "/admin", label: "Admin Panel", icon: Crown, anim: "nav-ico-settings" },
   { path: "/settings", label: "Settings", icon: Settings, anim: "nav-ico-settings" },
 ];
 

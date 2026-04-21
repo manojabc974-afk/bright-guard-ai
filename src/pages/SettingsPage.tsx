@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import { Shield, Bell, Cpu, Wifi, Lock, Eye, Volume2 } from "lucide-react";
+import PageTitle from "@/components/ui/PageTitle";
+import { Settings } from "lucide-react";
 
 const settings = [
   { section: "Protection", items: [
@@ -22,10 +24,7 @@ const settings = [
 export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">SETTINGS</h1>
-        <p className="text-sm text-muted-foreground mt-1">Configure security preferences and AI features</p>
-      </div>
+      <PageTitle title="Settings" subtitle="Configure security preferences and AI features" icon={Settings} />
 
       {settings.map((section) => (
         <div key={section.section} className="glass rounded-xl overflow-hidden">

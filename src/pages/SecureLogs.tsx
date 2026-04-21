@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Lock, Hash, CheckCircle, Clock, Shield } from "lucide-react";
+import PageTitle from "@/components/ui/PageTitle";
 
 const logs = [
   { id: "0xA3F...8B2", action: "Phishing URL blocked", hash: "sha256:4e8f...c2a1", timestamp: "2024-04-16 14:32:01", verified: true, block: 14892 },
@@ -14,10 +15,7 @@ const logs = [
 export default function SecureLogs() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">BLOCKCHAIN SECURE LOGS</h1>
-        <p className="text-sm text-muted-foreground mt-1">Tamper-proof audit trail with cryptographic verification</p>
-      </div>
+      <PageTitle title="Blockchain Secure Logs" subtitle="Tamper-proof audit trail with cryptographic verification" icon={Lock} />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="glass rounded-xl p-5 flex items-center gap-4">

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import PageTitle from "@/components/ui/PageTitle";
 
 interface Message {
   id: string;
@@ -110,10 +111,7 @@ export default function AIAssistant() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] max-w-3xl mx-auto">
-      <div className="mb-4">
-        <h1 className="text-xl font-display font-bold tracking-wider">AI SECURITY ASSISTANT</h1>
-        <p className="text-sm text-muted-foreground mt-1">Real-time AI guidance powered by deep learning</p>
-      </div>
+      <PageTitle title="AI Security Assistant" subtitle="Real-time AI guidance powered by deep learning" icon={Bot} />
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-4 pr-2">
         <AnimatePresence>

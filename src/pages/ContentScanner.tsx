@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useVoiceAlert } from "@/hooks/useVoiceAlert";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import PageTitle from "@/components/ui/PageTitle";
 
 interface ContentResult {
   status: "safe" | "suspicious" | "phishing";
@@ -113,12 +114,7 @@ export default function ContentScanner() {
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
-      <div>
-        <h1 className="text-xl font-display font-bold tracking-wider">CONTENT & SCREENSHOT SCANNER</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          OCR + AI analysis for SMS, WhatsApp, emails, and screenshots
-        </p>
-      </div>
+      <PageTitle title="Content & Screenshot Scanner" subtitle="OCR + AI analysis for SMS, WhatsApp, emails, and screenshots" icon={ShieldAlert} />
 
       {/* Tabs */}
       <div className="glass rounded-xl p-1 flex gap-1">
