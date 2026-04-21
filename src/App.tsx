@@ -20,6 +20,10 @@ import LeakCheck from "@/pages/LeakCheck";
 import SettingsPage from "@/pages/SettingsPage";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import PasswordCheck from "@/pages/PasswordCheck";
+import GuardianMode from "@/pages/GuardianMode";
+import Emergency from "@/pages/Emergency";
+import Admin from "@/pages/Admin";
 import NotFound from "./pages/NotFound.tsx";
 import { Loader2 } from "lucide-react";
 
@@ -68,6 +72,10 @@ const AppRoutes = () => (
     <Route path="/app-monitor" element={<ProtectedRoute><AppLayout><AppMonitor /></AppLayout></ProtectedRoute>} />
     <Route path="/leak-check" element={<ProtectedRoute><AppLayout><LeakCheck /></AppLayout></ProtectedRoute>} />
     <Route path="/settings" element={<ProtectedRoute><AppLayout><SettingsPage /></AppLayout></ProtectedRoute>} />
+    <Route path="/password-check" element={<ProtectedRoute><AppLayout><PasswordCheck /></AppLayout></ProtectedRoute>} />
+    <Route path="/guardian" element={<ProtectedRoute><AppLayout><GuardianMode /></AppLayout></ProtectedRoute>} />
+    <Route path="/emergency" element={<ProtectedRoute><AppLayout><Emergency /></AppLayout></ProtectedRoute>} />
+    <Route path="/admin" element={<ProtectedRoute><AppLayout><Admin /></AppLayout></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
