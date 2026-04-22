@@ -25,6 +25,7 @@ import GuardianMode from "@/pages/GuardianMode";
 import Emergency from "@/pages/Emergency";
 import Admin from "@/pages/Admin";
 import NotFound from "./pages/NotFound.tsx";
+import InstallApp from "@/pages/InstallApp";
 import { Loader2 } from "lucide-react";
 
 const queryClient = new QueryClient();
@@ -59,6 +60,7 @@ const AppRoutes = () => (
   <Routes>
     <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
     <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+    <Route path="/install" element={<InstallApp />} />
     <Route path="/" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
     <Route path="/scan" element={<ProtectedRoute><AppLayout><URLScanner /></AppLayout></ProtectedRoute>} />
     <Route path="/content" element={<ProtectedRoute><AppLayout><ContentScanner /></AppLayout></ProtectedRoute>} />
